@@ -31,14 +31,18 @@ input {
   font-size: 16px;
   margin-right:4px;
   border-radius:5px;
+  outline:none;
 }
-
+input:focus{
+  border:2px solid #12348D;
+  padding:8px 9px;
+}
 input[type=text] {
   background-color: #f1f1f1;
 }
 
 input[type=button] {
-  background-color: DodgerBlue;
+  background-color: #12348D;
   color: #fff;
   cursor: pointer;
   font-weight:bold;
@@ -89,10 +93,14 @@ width:100%;
 .Freeze{
   margin-top:20px;
 }
-
+#InputPO:invalid {
+  background: #ffcbcb;
+  color: #b92424;
+  }
+  
 #kertas{
 margin-top:80px;
-width:700px;
+width:800px;
 margin-left:auto;
 margin-right:auto;
 padding:20px;
@@ -101,7 +109,44 @@ box-shadow: -1px 2px 1px 0px rgba(4,22,36,0.09);
 -webkit-box-shadow: -1px 2px 1px 0px rgba(4,22,36,0.09);
 -moz-box-shadow: -1px 2px 1px 0px rgba(4,22,36,0.09);
 }
+td{
+padding:10px;
+}
+#myTable {
+  counter-reset: rowNumber;
+}
 
+#myTable .nomorin::before {
+  display: table-cell;
+  counter-increment: rowNumber;
+  content: counter(rowNumber) ".";
+  padding-right: 0.3em;
+  float:left;
+  font-weight:bold;
+}
+.clear{
+background:none;
+color:#ccc;
+border:none;
+outline:none;
+cursor: pointer;
+margin-left:-33px;
+margin-right:10px;
+transition:0.1s;
+}
+.clear:hover{
+color:#b92424;
+}
+.logo{
+margin-bottom:40px;margin-left:10px;display:none;
+}
+.tgl{
+color:#eee;
+width:auto;
+display:none;
+margin-top:40px;
+text-align:center;
+}
 @media print {
   body * {
     visibility: hidden;
@@ -112,7 +157,16 @@ box-shadow: -1px 2px 1px 0px rgba(4,22,36,0.09);
   #kertas {
     position: absolute;
     left: 0;
-    top: 0;
+    top: -70px;
+	    -webkit-box-shadow: none;
+    -moz-box-shadow:    none;
+    box-shadow:         none; 
+	}
+  .logo{
+  display:block;
+  }
+  .tgl{
+  display:block;
   }
 }
 		</style>
@@ -121,28 +175,32 @@ box-shadow: -1px 2px 1px 0px rgba(4,22,36,0.09);
 	<div class="center">
 <img width="95px" src="logo.png" style="margin-bottom:-11px;margin-right:30px;margin-left:10px">
   <div class="kolom">
-    <input style="width:100px;" id="InputPO" maxlength="6" name="NamaPo" placeholder="P.O">
+    <input style="width:100px;" id="InputPO" maxlength="6" name="NamaPo" placeholder="P.O" minlength="6"><button class="clear" onclick="document.getElementById('InputPO').value = ''" tabindex="-1">✖</button></input>
   </div>
   <div class="kolom">
-    <input style="width:100px;" id="InputPic" type="text" name="NamaPic" placeholder="Nama PIC">
+    <input style="width:100px;" id="InputPic" type="text" name="NamaPic" placeholder="Nama PIC"><button class="clear" onclick="document.getElementById('InputPic').value = ''" tabindex="-1">✖</button></input>
   </div>
   <div class="kolom">
-    <input style="width:300px;" id="InputBarang" type="text" name="NamaBarang" placeholder="Nama Barang">
+    <input style="width:300px;" id="InputBarang" type="text" name="NamaBarang" placeholder="Nama Barang"><button class="clear" onclick="document.getElementById('InputBarang').value = ''" tabindex="-1">✖</button></input>
   </div>
   <div class="kolom">
-    <input style="width:100px;" id="InputQty" type="number" name="Qty" placeholder="Qty">
+    <input style="width:100px;" id="InputQty" type="number" name="Qty" placeholder="Qty" onkeyup="success()"><button class="clear" onclick="document.getElementById('InputQty').value = ''" tabindex="-1">✖</button></input>
   </div>
-  <input type="button" onclick="dataBaru()" value="+">
-  <input type="button" onclick="window.print()" value="Print" style="float:right;width:100px;">
+  <input type="button" onclick="dataBaru()" id="tombolplus" value="+"  tabindex="-1">
+  <input type="button" onclick="undo()" id="tombolmin" value="-" style="background:#b92424"  tabindex="-1">
+  <input type="button" onclick="window.print()" value="Print" style="float:right;width:100px;"  tabindex="-1">
 </div>
 <div id="kertas">
+		<img width="95px" src="logo.png" class="logo">
+		
 		<table class="sortable" id="myTable">
 			<thead>
-			<tr>
-				<th style="width:94px;"><b>P.O</b></th>
-    <th style="width:120px;"><b>PIC</b></th>
-    <th style="width:350px;"><b>NAMA BARANG</b></th>
-    <th style="width:75px;"><b>QTY</b></th>
+			<tr style="border-bottom:20px solid white;">
+			<th style="width:100px;"><b>P.O</b></th>
+			<th style="width:120px;"><b>PIC</b></th>
+			<th style="width:500px;"><b>NAMA BARANG</b></th>
+			<th style="width:75px;"><b>QTY</b></th>
+
 			</tr>
 			</thead>
 			<tbody>
@@ -151,9 +209,57 @@ box-shadow: -1px 2px 1px 0px rgba(4,22,36,0.09);
 			</tr>
 			</tbody>
 		</table>
+		<div id="tanggal" class="tgl"></div>
 </div>
 	</body>
 	<script>
+	function success() {
+	 if(document.getElementById("InputQty").value==="") { 
+            document.getElementById('tombolplus').disabled = true; 
+        } else { 
+            document.getElementById('tombolplus').disabled = false;
+        }
+    }
+	const d = new Date();
+document.getElementById("tanggal").innerHTML = d;
+
+	function undo() {
+	document.getElementById("myTable").deleteRow(1);
+	}
+	
+	window.onload = function() {
+  document.getElementById("InputPO").focus();
+}
+
+	
+document.getElementById("InputQty")
+    .addEventListener("keyup", function(event) {
+    event.preventDefault();
+    if (event.keyCode === 13) {
+        document.getElementById("tombolplus").click();
+		document.getElementById("InputPO").focus();
+    }
+});
+
+document.getElementById("InputQty")
+
+	.addEventListener("keyup", function(event) {
+    event.preventDefault();
+    if (event.keyCode === 46) {
+        document.getElementById("tombolmin").click();
+		document.getElementById("InputPO").focus();
+    }
+});
+document.getElementById("InputPO")
+
+	.addEventListener("keyup", function(event) {
+    event.preventDefault();
+    if (event.keyCode === 46) {
+        document.getElementById("tombolmin").click();
+		document.getElementById("InputPO").focus();
+    }
+});
+
 function dataBaru() {
   var table = document.getElementById("myTable");
   var row = table.insertRow(1);
@@ -169,6 +275,11 @@ function dataBaru() {
   cell2.innerHTML = pic;
   cell3.innerHTML = barang;
   cell4.innerHTML = qty;
+  row.style.borderBottom = "1px solid #eee";
+  cell2.style.textAlign = "center";
+  cell1.classList.add("nomorin");
+  cell4.contentEditable = "true";
+  cell4.setAttribute("contenteditable", "true");
 }
 
 
@@ -271,8 +382,19 @@ function kolom(inp, arr) {
 
 /*An array containing all the country names in the world:*/
 var NamaBarang = [
+"SELANG MANIFOLD MERK TASCO R22",
+"SANDWICH PAPER KRAFT 45X10X85CM",
+"HANDY TALK MOTOROLLA CP1660",
+"STICKER ORACAL 651 BLUE 20 METER",
+"EMERGENCY SHOWER EYEWASH SUS 304",
+"FILTER STAINLESS DIA 10CM",
+"PAINT FTALIT 115-446 SURF BLUE",
+"PAINT FTALIT MIDDLE GREEN 115/129 KF-29",
+"WIRELESS MICROPHONE HARDWELL",
+"RAINCOAT AXIO 2 LAYER ALL COLOR",
+"CHAIR ERGOTEC BLACK 710 U",
+"CHAIR ERGOTEC 601P BLACK",
 "3M SCOTCH",
-"ABBRASIVE PAPER TAIYO 9x11 GRIT 600",
 "AIR HOSE REEL 8mtr",
 "AIR MICRO GRINDER NANKAI 5400 RPM",
 "BANTEX A4 KODE 1450-01 [7cm] - BENING",
@@ -286,53 +408,32 @@ var NamaBarang = [
 "BATTERY ABC ALKALINE",
 "BEARING FAG 1211",
 "BROTHER DK-11209",
-"BUMBU BAMBOE EXPORT - SOTO AYAM",
-"BUMBU BAMBOE EXPORT - SOTO BETAWI",
-"BUMBU BAMBOE EXPORT - NASI GORENG",
-"BUMBU BAMBOE EXPORT - NASI GORENG PEDAS",
-"BUMBU BAMBOE EXPORT - NASI KUNING",
-"BUMBU BAMBOE EXPORT - NASI UDUK",
-"BUMBU BAMBOE EXPORT - AYAM KECAP",
-"BUMBU BAMBOE EXPORT - AYAM GORENG",
-"BUMBU BAMBOE EXPORT - RENDANG",
-"BUMBU BAMBOE EXPORT - KARE",
-"BUMBU BAMBOE EXPORT - AYAM KALASAN",
-"BUMBU BAMBOE EXPORT ASIA",
-"BUMBU BAMBOE EXPORT ASIA",
-"BUMBU BAMBOE EXPORT ASIA",
-"BUMBU BAMBOE EXPORT ASIA",
-"BUMBU BAMBOE EXPORT - NASI GORENG CAKALANG",
-"BUMBU BAMBOE EXPORT - SOTO KUALI SOLO",
-"BUMBU BAMBOE EXPORT - KREMES",
-"BUMBU BAMBOE MC COY -  BURGER ORIGINAL",
-"BUMBU BAMBOE MC COY - BURGER PEDAS",
-"BUMBU BAMBOE MC COY - MEATBALL PATTY",
-"CABLE TISE CV - 150 SB",
+"BLOCK BEARING 8 HOLE SHAFT",
 "CABEL TISE LT - 250 BK",
 "CABLE HDMI 30CM MTM",
+"CABLE TISE CV - 150 SB",
 "CABLE TISE KSS CV-432",
-"CARD CASE MAGNET A3 - Blue",
-"CARD CASE MAGNET A3 - Green",
-"CARD CASE MAGNET A3 - Red",
-"CARD CASE MAGNET A3 - Yellow",
-"CARD CASE MAGNET A4 - Blue",
-"CARD CASE MAGNET A4 - Green",
-"CARD CASE MAGNET A4 - Red",
-"CARD CASE MAGNET A4 - Yellow",
-"CARD CASE MAGNET A5 - Blue",
-"CARD CASE MAGNET A5 - Green",
-"CARD CASE MAGNET A5 - Red",
-"CARD CASE MAGNET A5 - Yellow",
-"CARD CASE MAGNET A6 - Yellow",
-"CARD CASE MAGNET A6 - Red",
-"CARD CASE MAGNET C1 - Blue",
-"CARD CASE MAGNET C1 - Green",
-"CARD CASE MAGNET C1 - Red",
-"CARD CASE MAGNET C1 - Yellow",
-"CARD CASE MAGNET C2 - Blue",
-"CARD CASE MAGNET C2 - Green",
-"CARD CASE MAGNET C2 - Red",
-"CARD CASE MAGNET C2 - Yellow",
+"CC MAGNETIC A3 - Blue",
+"CC MAGNETIC A3 - Green",
+"CC MAGNETIC A3 - Red",
+"CC MAGNETIC A3 - Yellow",
+"CC MAGNETIC A4 - Blue",
+"CC MAGNETIC A4 - Green",
+"CC MAGNETIC A4 - Red",
+"CC MAGNETIC A5 - Blue",
+"CC MAGNETIC A5 - Green",
+"CC MAGNETIC A5 - Red",
+"CC MAGNETIC A5 - Yellow",
+"CC MAGNETIC A6 - Red",
+"CC MAGNETIC A6 - Yellow",
+"CC MAGNETIC C1 - Blue",
+"CC MAGNETIC C1 - Green",
+"CC MAGNETIC C1 - Red",
+"CC MAGNETIC C1 - Yellow",
+"CC MAGNETIC C2 - Blue",
+"CC MAGNETIC C2 - Green",
+"CC MAGNETIC C2 - Red",
+"CC MAGNETIC C2 - Yellow",
 "CARD CASE NON MAGNET 4K-804 - Blue",
 "CARD CASE NON MAGNET A3 - Blue",
 "CARD CASE NON MAGNET A3 - Green",
@@ -345,8 +446,11 @@ var NamaBarang = [
 "CENTRUM SILVER WOMEN 50+ ( 100 TABLET )",
 "CONTACTOR KING STELL SP15 // 200-220V",
 "CUTTER KENKO L-500",
+"COMPONENT TESTER/LCR-TC1",
+"CHEMICAL SORBENT PAD 3M P110 27.5*32.5",
 "DRILL 15 CM",
 "DRILL BIT ( TMB - 520// 200 M )",
+"DUST MASK THIN GREEN KOMET",
 "EARTH AUGER",
 "ELECTRONICK KITCHEN SCALE [LS-07]",
 "ELECTRONICK KITCHEN SCALE [MANGKOK]",
@@ -354,136 +458,117 @@ var NamaBarang = [
 "ELEMEN PEMANAS SOLDER 220v/60w",
 "EVETEEL BRUSH",
 "EXTRA MAGAZINE FILE FC 12 CM",
-"EXTRA MAGAZINE FILE FC 12 CM",
-"EXTRA MAGAZINE FILE FC 12 CM",
-"EXTRA MAGAZINE FILE FC 12 CM",
+"EPOTEC LEM",
+"ELEMENT SOLDERING IRON 220V 60W",
 "FACE SHIELD NAGITA/ORBITA/RICKY",
 "FACE SHIELD NAGITA/RICKY",
 "FACIAL GUN",
 "FONDAN CAKE / ALAS KUE 50 x 40",
-"FONDAN CAKE / ALAS KUE 50 x 40",
-"FONDAN CAKE / ALAS KUE 50 x 40",
 "FONDAN CAKE / ALAS KUE 64 x 45",
-"FONDAN CAKE / ALAS KUE 64 x 45",
-"FONDAN CAKE / ALAS KUE 64 x 45",
-"FONDAN CAKE / ALAS KUE 65 x 45",
-"FONDAN CAKE / ALAS KUE 65 x 45",
-"FONDAN CAKE / ALAS KUE 70 x 50",
-"FONDAN CAKE / ALAS KUE 70 x 50",
-"FONDAN CAKE / ALAS KUE 70 x 50",
-"FONDAN CAKE / ALAS KUE 70 x 50",
 "FONDAN CAKE / ALAS KUE 70 x 50",
 "FONDAN CAKE / ALAS KUE 70 x 70",
-"FONDAN CAKE / ALAS KUE 70 x 70",
-"FONDAN CAKE / ALAS KUE 70 x 70",
-"FONDAN CAKE / ALAS KUE 70 x 70",
-"FONDAN CAKE / ALAS KUE 70 x 70",
-"FOUNDAN CAKE 40X30",
 "FOUNDAN CAKE 40X30",
 "FW 110x70",
 "FW 90x85",
+"FLANGE COUPLING ID 12MM CYLINDER DIA 16MM",
+"FOOD TRAY STAINLESS SS304",
 "GETRA ET - K 222 [PEMANGGANG]",
 "GETRA SC-D2 [CUP SEALER]",
 "GOOGLE A",
 "GOOGLE B-AF",
 "GOOGLE B-NAF",
 "GRINDER KIT",
+"HANDGLOVES - GLOVY",
 "HANDGLOVES 7-8-9 ( LOGO/PREMIER )",
 "HANDGLOVES 7-8-9 ( POLOS )",
+"HANDGLOVES ESD",
 "HANDGLOVES LATEX MAXTER",
 "HANDGLOVES PALM COAT",
-"HANDGLOVES PALM COAT",
-"HANDGLOVES PALM COAT",
-"HANDGLOVES - GLOVY",
-"HANDGLOVES ESD",
-"HANDGLOVES ESD",
-"HANDGLOVES ESD",
-"HANDGLOVES WHITE COAT",
-"HANDGLOVES WHITE COAT",
 "HANDGLOVES WHITE COAT",
 "HAZMAT /APD SWITE",
 "HT VEV VID UHF",
+"HAND GLOVES SIZE 7-8",
+"HAND GLOVES PLASTIC MERK ONEMED",
+"HAND GLOVES PLASTIC MERK GLOVY",
 "IRON RULlER 40CM",
-"JERIGEN VOLUME 20 LTR - PUTIH",
+"JAM DINDING SAKANA 080 WHITE DIA. 30CM",
 "KAPE GAGANG + SILET",
 "KENMASTER KM-915",
 "KERTAS KASIR PPL TS 4465 44x65x18mm",
+"KEYBOARD LOGITECH K120",
 "KEYBOARD LOGITECH MK120",
 "KIKIR TSUBUSAN SET @ 5 PCS",
 "KIMTECH PREP 33560",
-"LYRA 12",
-"LYRA 4",
-"LYRA 5",
-"LYRA 6",
-"LYRA 8",
-"MONTANA 12",
-"MONTANA 8",
-"OPERA 12 BWH - PLAIN",
-"OPERA 12 BWH - BLUE",
-"OPERA 12 BWH - ORANGE",
-"OPERA 12 BWH - RED",
-"OPERA 4 BWH - PLAIN",
-"OPERA 6 BWH - PLAIN",
-"OPERA 6 BWH - BLUE",
-"OPERA 6 BWH - ORANGE",
-"OPERA 6 BWH - RED",
-"OPERA 8 BWH - PLAIN",
-"OPERA 8 BWH",
-"OPERA 8 BWH - BLUE",
-"OPERA 8 BWH - GREEN",
-"OPERA 8 BWH - ORANGE",
-"OPERA 8 BWH - RED",
-"OPERA 9T",
-"OPERA DC 12 [MP]",
-"OPERA DC 6 [MP]",
-"OPERA DC 8 [MP]",
-"OPERA MICRO PAINT BRUSH SET {KUAS LUKIS}",
-"OPERA SPB 1.1/4 - WHITE",
-"OPERA SPB 3/4 - WHITE",
-"PREMIER 6 [KASAR]",
-"PREMIER 8 [HALUS]",
-"PREMIER 8 [KASAR]",
-"PREMIER 3 [HALUS]",
 "KURSI ERGOTEC 610 P",
 "KURSI ERGOTEC 710 U - BLACK",
+"KIMTECH PREP KIMTEX 33560",
 "LAKBAN KERTAS KRAFT 72mmX50m",
+"LYRA #12",
+"LYRA #4",
+"LYRA #5",
+"LYRA #6",
+"LYRA #8",
 "MAGAZINE FILE 10CM",
+"MAGNETIC SHEET",
 "MASKER 3 PLY - BLUE",
 "MASKER 3 PLY EAR LOOP EVO ISI 50 - GREEN",
 "MASKER 3 PLY RESPIRATORS - BLUE",
-"MASKER 4 PLY",
 "MASKER 4 PLY EANNE",
+"MASKER 4 PLY",
 "MASKER CARBON 4PLY",
 "MASKER DISPOSABLE 3PLY",
 "MASKER DR. RAY KN 95",
-"MASKER JACKIE KN 95",
 "MASKER DUST SURGICAL COMET 3PLY",
+"MASKER JACKIE KN 95",
 "MASKER KAIN ALL COLOR",
-"MASKER KAIN WHITE",
 "MASKER KAIN WHITE A",
 "MASKER KAIN WHITE B",
+"MASKER KAIN WHITE",
 "MASKER MEDI MASK 3PLY",
 "MASKER MULUT KOKI TRASNPARAN",
 "MINI PC INTEL I11",
 "MINI PC INTEL NUC 1013H",
 "MINYAK SAYUR KUNCI MAS",
+"MONITOR LED SAMSUNG 24 INCH",
 "MONITOR LG 22 INC",
+"MONTANA 12",
+"MONTANA 8",
 "MUNAFIE KORSET",
-"MUNAFIE KORSET",
-"MUNAFIE KORSET",
+"MCCB SCHNEIDER COMPACT NSX160F",
+"MASKER KN95 JACKIE",
+"MASKER CARBON 4 PLY MERK ONEMED",
+"NAIL 4CM",
 "OASIS",
+"OPERA #12 BLUE",
+"OPERA #12 ORANGE",
+"OPERA #12 PLAIN",
+"OPERA #12 RED",
+"OPERA #4 PLAIN",
+"OPERA #6 BLUE",
+"OPERA #6 ORANGE",
+"OPERA #6 PLAIN",
+"OPERA #6 RED",
+"OPERA #8 BLUE",
+"OPERA #8 GREEN",
+"OPERA #8 ORANGE",
+"OPERA #8 PLAIN",
+"OPERA #8 RED",
+"OPERA #8",
+"OPERA MICRO PAINT BRUSH SET {KUAS LUKIS}",
+"OPERA SPB 1.1/4 - WHITE",
+"OPERA SPB 3/4 - WHITE",
 "PAPER COVERED A5 FC 7CM",
 "PAPER COVERED LAF FC 7CM",
 "PAPER LEVEL ARCH FILE A4 ( 7CM )",
 "PAPER LEVEL ARCH FILE A5 ( 7CM )",
 "PAPER LEVER ARCH FILE FC 7CM",
-"PAPER MAP BIOLA 5002 1/50PCS - RED",
 "PAPER MAP BIOLA 5002 1/50PCS - BLUE",
+"PAPER MAP BIOLA 5002 1/50PCS - RED",
 "PAYUNG GOLF",
 "PEGANGAN PINTU SET",
-"PILLOW BLOCK BEARING ASB UCP 205",
 "PENSIL MAKITA - BROWN",
 "PENSIL MAKITA - PINK",
+"PILLOW BLOCK BEARING ASB UCP 205",
 "PITA TINTA PRINTER EPSON [FULL MARK]",
 "PLASMA CUTTER LG 40/PT31 1-30mm",
 "PLASTICK MIKA 40m-0.09mm - BENING",
@@ -495,32 +580,36 @@ var NamaBarang = [
 "POCKET 2040 A4 0,06MM PP 20PCS - CLEAR",
 "POCKET 2044 FC 0,06MM PP 20PCS",
 "POCKET FC 0,06MM PP 20PCS - CLEAR",
+"PREMIER 3 [HALUS]",
+"PREMIER 6 [KASAR]",
+"PREMIER 8 [HALUS]",
+"PREMIER 8 [KASAR]",
+"PSP-600-24",
 "PUNCH KENKO SMALL",
 "PURITAN'S PRIDE PROBIOTIC 10 -120",
 "PVC BOARD 122CMx244CM",
+"PAINT FTALIT 115-147 LEMON YELLOW KF-47",
+"PAINT FTALIT DOVE GREY NO.140",
+"PLASTIC WRAPPING 15CM X 200MTR",
 "QUICK COUPLER SH-30",
 "RAINCOT SIZE - L - BLUE",
 "REFFIL CUTTER KEENKO L-150",
 "REFILL CUTTER KENKO A-100",
 "RULER STAINLESS 60cm",
+"ROOFING SCREW #12 X 35MM",
 "SABUT HIJAU",
-"SAMBAL BAMBOE NUSANTARA SAMBAL TERASI",
-"SAMBAL BAMBOE NUSANTARA - SAMBAL IJO",
-"SAMBAL BAMBOE NUSANTARA - SAMBAL BAWANG",
-"SAMBAL BAMBOE NUSANTARA - SAMBAL UDANG",
-"SAMBAL BAMBOE NUSANTARA - ",
-"SANDPAPER EAGLE 120",
-"SANDPAPER EAGLE 320",
-"SANDPAPER EAGLE 400",
+"SANDPAPER #120 EAGLE",
+"SANDPAPER #320 EAGLE",
+"SANDPAPER #400 EAGLE",
 "SANDPAPER GREYHOUND GRIT #40",
 "SANDPAPER GREYHOUND GRIT#180",
+"SANDPAPER TAIYO #600",
 "SANDWICH PAPER BAG 45X10X85CM",
-"SARUNG TANGAN FINGER COAT - S - PINK",
-"SARUNG TANGAN FINGER COAT - M - GREEN",
 "SARUNG TANGAN FINGER COAT - L - GREY",
+"SARUNG TANGAN FINGER COAT - M - GREEN",
+"SARUNG TANGAN FINGER COAT - S - PINK",
 "SARUNG TANGAN PALM COAT",
 "SCISSOR CONCAVE SMALL",
-"SCOTT'S DHA GUMMIES VITAMIN D ISI 60 BUTIR",
 "SCOTT'S DHA GUMMIES VITAMIN D ISI 60 BUTIR",
 "SCOTT'S DHA GUMMIES VITAMIN D ISI 60+5 BUTIR",
 "SENSOR FOTEK ESR-40DA-H SOLID STATE MODULE",
@@ -542,14 +631,22 @@ var NamaBarang = [
 "STARBUCKS SINGLE-ORIGIN-COFFEE SUMATRA",
 "STEEL BELT LACING TIGER-20",
 "STICKER ORACIAL [KUNING]",
+"SCALE DIGITAL SF400",
+"SANDPAPER TAIYO #600",
+"SANDPAPER GREYHOUND GRIT #180/50M",
 "TANG POTONG SHUNSINE SS-190/125mm",
 "TANG POTONG STAINLESS SANFIX",
 "TAYO MAX GRID 60 GRIT 60",
 "THERMOMETER GUN [CONTEC]",
 "THERMOMETER GUN [VICTOR]",
 "TRANSPARANT CLIP BOARD",
-"TRIMING BOLD",
-"TRIMING KNIFE",
+"TRIMMING BOWL",
+"TRIMMING KNIFE",
+"TV LG 55 UP77 HDMI",
+"TIMING PULLEY BORE 5MM/W10MM/20 TEETH",
+"TIMING PULLEY HTD3M 60 TEETH BORE 8MM BELT 10MM",
+"TIMING PULLEY HTD3M GIGI 61/L 183MM /W10MM (CLOSED LOOP)",
+"WAFER SCREW SELF DRILLING DIA. 4.7 X 30L",
 "WATER PAS",
 "WD-40-330ML",
 "WHITE BOARD 102x30",
@@ -561,12 +658,9 @@ var NamaBarang = [
 "WOODEN 2M",
 "WRAPING 50X17X300 M",
 "WRAPING SFA 15cm x 17cm x 200cm",
-"MONITOR LED SAMSUNG 24 INCH",
-"TV LG 55 UP77 HDMI",
-"KEYBOARD LOGITECH K120",
-"PSP-600-24",
-"MAGNETIC SHEET"];
-var NamaPic = ["YUNI", "HANI", "MARIA", "NANDO", "DANETA", "YENNI", "BIA", "ANISA", "YOSEP"];
+
+];
+var NamaPic = ["YUNI", "HANI", "MARIA", "NANDO", "DANETI", "YENNI", "BIA", "ANISA", "YOSEP"];
 /*initiate the kolom function on the "InputBarang" element, and pass along the NamaBarang array as possible kolom values:*/
 kolom(document.getElementById("InputBarang"), NamaBarang);
 kolom(document.getElementById("InputPic"), NamaPic);
