@@ -170,18 +170,19 @@ text-align:center;
   }
 }
 		</style>
+		<title>OS Maker</title>
 	</head>
 	<body>
 	<div class="center">
 <img width="95px" src="logo.png" style="margin-bottom:-11px;margin-right:30px;margin-left:10px">
   <div class="kolom">
-    <input style="width:100px;" id="InputPO" maxlength="6" name="NamaPo" placeholder="P.O" minlength="6"><button class="clear" onclick="document.getElementById('InputPO').value = ''" tabindex="-1">✖</button></input>
+    <input style="width:100px;" id="InputPO" maxlength="6" name="NamaPo" placeholder="P.O" minlength="6" ><button class="clear" onclick="document.getElementById('InputPO').value = ''" tabindex="-1">✖</button></input>
   </div>
   <div class="kolom">
     <input style="width:100px;" id="InputPic" type="text" name="NamaPic" placeholder="Nama PIC"><button class="clear" onclick="document.getElementById('InputPic').value = ''" tabindex="-1">✖</button></input>
   </div>
   <div class="kolom">
-    <input style="width:300px;" id="InputBarang" type="text" name="NamaBarang" placeholder="Nama Barang"><button class="clear" onclick="document.getElementById('InputBarang').value = ''" tabindex="-1">✖</button></input>
+    <input style="width:300px;" id="InputBarang" type="text" name="NamaBarang" placeholder="Nama Barang" onkeyup='saveValue(this);'><button class="clear" onclick="document.getElementById('InputBarang').value = ''" tabindex="-1">✖</button></input>
   </div>
   <div class="kolom">
     <input style="width:100px;" id="InputQty" type="number" name="Qty" placeholder="Qty" onkeyup="success()"><button class="clear" onclick="document.getElementById('InputQty').value = ''" tabindex="-1">✖</button></input>
@@ -213,6 +214,12 @@ text-align:center;
 </div>
 	</body>
 	<script>
+	
+	
+	window.onbeforeunload = function() {
+        return "Dude, are you sure you want to leave? Think of the kittens!";
+    }
+	
 	function success() {
 	 if(document.getElementById("InputQty").value==="") { 
             document.getElementById('tombolplus').disabled = true; 
@@ -221,7 +228,7 @@ text-align:center;
         }
     }
 	const d = new Date();
-document.getElementById("tanggal").innerHTML = d;
+document.getElementById("tanggal").innerHTML = "List OS -&nbsp; Dibuat Pada&nbsp;" + d;
 
 	function undo() {
 	document.getElementById("myTable").deleteRow(1);
@@ -270,16 +277,18 @@ function dataBaru() {
   var po = document.getElementById("InputPO").value;
   var pic = document.getElementById("InputPic").value;
   var barang = document.getElementById("InputBarang").value;
+  var kapital = barang.toUpperCase();
   var qty = document.getElementById("InputQty").value;
   cell1.innerHTML = po;
-  cell2.innerHTML = pic;
-  cell3.innerHTML = barang;
+  cell2.innerHTML = pic.toUpperCase();
+  cell3.innerHTML = barang.toUpperCase();
   cell4.innerHTML = qty;
   row.style.borderBottom = "1px solid #eee";
   cell2.style.textAlign = "center";
   cell1.classList.add("nomorin");
   cell4.contentEditable = "true";
   cell4.setAttribute("contenteditable", "true");
+  
 }
 
 
